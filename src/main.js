@@ -1,7 +1,10 @@
+// variables,
 const gitUserEl = document.getElementById('github-user');
 const inputEl = document.querySelector('.input-value');
 const btnEl = document.querySelector('.submit-btn');
+const loadingMessage = document.getElementById('loading-message');
 
+// fetching the user repos,
 const fetchUserRepos = async (repoName) => {
   try {
     let res = await fetch(`https://api.github.com/users/${repoName}/repos`);
@@ -11,6 +14,7 @@ const fetchUserRepos = async (repoName) => {
     divEl.className = 'flex items-center gap-3 mt-3';
     let fragmentEl = document.createDocumentFragment();
 
+    // getting only 5 repos from all repos,
     if (data.length > 5) {
       for (let i = 0; i <= 5; i++) {
         let repo = data[i];
@@ -36,20 +40,25 @@ const fetchUserRepos = async (repoName) => {
   }
 };
 
+// getting the user from github,
 const fetchUserHandle = async (user) => {
   const url = `https://api.github.com/users/${user}`;
   const userDetailsEl = document.createElement('div');
   userDetailsEl.classList.add('user-profile');
   gitUserEl.innerHTML = '';
 
-  let divEl = '';
-  divEl = await fetchUserRepos(user);
+  loadingMessage.style.display = 'block';
+
+  let divEl = document.createElement('div');
+  let repoEl = await fetchUserRepos(user);
+  console.log(repoEl);
   console.log(divEl);
 
   try {
     let res = await fetch(url);
     let data = await res.json();
 
+    // REST API limit message,
     if (res.status === 403) {
       const userDetailsEl = document.createElement('div');
       userDetailsEl.classList.add('user-profile');
@@ -58,6 +67,7 @@ const fetchUserHandle = async (user) => {
       return;
     }
 
+    // REST API non response message,
     if (!res.ok) {
       const userDetailsEl = document.createElement('div');
       userDetailsEl.classList.add('user-profile');
@@ -66,7 +76,11 @@ const fetchUserHandle = async (user) => {
       return;
     }
 
-    userDetailsEl.innerHTML = `
+    setTimeout(() => {
+      divEl.innerHTML = repoEl;
+      console.log(divEl);
+      // actual HTML elemnt of user,
+      userDetailsEl.innerHTML = `
         <!-- user details -->
         <div class="flex gap-5 items-center justify-between">
           <div class="flex gap-5 items-center justify-start">
@@ -96,7 +110,7 @@ const fetchUserHandle = async (user) => {
 
         <!-- user bio -->
         ${data.bio || data.blog ? (
-        `
+          `
         <div class="bg-zinc-800 rounded-xl p-3">
           <div class="flex items-center gap-3">
             <p class="text-sm font-semibold italic">Bio: </p>
@@ -110,34 +124,45 @@ const fetchUserHandle = async (user) => {
           </div>
         </div>
         `
-      ) : ""
-      }
+        ) : ""
+        }
 
         <!-- user repos -->
         <div class='space-y-5'>
-          <h2 class="italic font-semibold">Users Repos:</h2>
+          <h2 class="italic font-semibold">User's Repos:</h2>
           ${divEl === '' ? "No repos found!" : divEl}
         </div> 
         `;
 
-    gitUserEl.append(userDetailsEl);
+      gitUserEl.append(userDetailsEl);
 
+    }, 2000);
   } catch (error) {
     console.log("Error in fetching user", error);
+  } finally {
+    loadingMessage.style.display = 'none';
   }
 };
 
+// loading default profile when window loads,
+fetchUserHandle('awizp');
 
-setTimeout(() => {
-  fetchUserHandle('awizp');
-}, 1000);
-
+// adding click event to fetch user,
 btnEl.addEventListener('click', () => {
   let inputVal = inputEl.value.trim();
 
   if (inputVal === '') return;
 
-  setTimeout(() => {
+  fetchUserHandle(inputVal);
+});
+
+// adding keydown event to fetch user,
+inputEl.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    let inputVal = inputEl.value.trim();
+
+    if (inputVal === '') return;
+
     fetchUserHandle(inputVal);
-  }, 1000);
+  }
 });
