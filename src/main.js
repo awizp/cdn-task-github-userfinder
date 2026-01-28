@@ -78,7 +78,7 @@ const fetchUserHandle = async (user) => {
     // actual HTML elemnt of user,
     userDetailsEl.innerHTML = `
         <!-- user details -->
-        <div class="flex gap-5 items-center justify-between">
+        <div class="flex flex-col md:flex-row gap-5 md:items-center items-start justify-between">
           <div class="flex gap-5 items-center justify-start">
             <div class="w-20 h-20 rounded-full border-2 border-white overflow-hidden">
               <img src="${data.avatar_url}" alt="${data.login}'s Avatar"
@@ -92,7 +92,7 @@ const fetchUserHandle = async (user) => {
             </div>
           </div>
 
-          <div class="flex flex-col justify-start items-center gap-2">
+          <div class="flex md:flex-col flex-row justify-between items-start md:justify-start md:items-center gap-2">
             <div class="flex items-center gap-3">
               <p class="text-sm text-purple-600 font-semibold">Followers: </p>
               <p class="text-sm text-gray-200">${data.followers}</p>
@@ -140,7 +140,22 @@ const fetchUserHandle = async (user) => {
 };
 
 // loading default profile when window loads,
-fetchUserHandle('awizp');
+const debounce = (func, delay) => {
+  let timeoutId;
+
+  return () => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      func(e);
+    }, delay);
+  };
+};
+
+const debounceHandle = (user = 'awizp') => {
+  debounce(fetchUserHandle(user), 500);
+};
+
+debounceHandle();
 
 // adding click event to fetch user,
 btnEl.addEventListener('click', () => {
@@ -148,7 +163,7 @@ btnEl.addEventListener('click', () => {
 
   if (inputVal === '') return;
 
-  fetchUserHandle(inputVal);
+  debounceHandle(inputVal);
 });
 
 // adding keydown event to fetch user,
@@ -158,6 +173,6 @@ inputEl.addEventListener('keydown', (e) => {
 
     if (inputVal === '') return;
 
-    fetchUserHandle(inputVal);
+    debounceHandle(inputVal);
   }
 });

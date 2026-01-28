@@ -8,7 +8,7 @@
 
 @layer components {
     .input-form {
-        @apply w-100 flex gap-3 items-center justify-center;
+        @apply w-full sm:w-100 flex flex-col md:flex-row gap-3 items-center justify-center;
     }
 
     .input-value {
