@@ -11,13 +11,13 @@ const fetchUserRepos = async (repoName) => {
     let data = await res.json();
 
     let divEl = document.createElement('div');
-    divEl.className = 'flex items-center gap-3 mt-3';
+    divEl.className = 'flex items-center gap-3 mt-3 flex-wrap';
     let fragmentEl = document.createDocumentFragment();
 
     // getting only 5 repos from all repos,
     if (data.length > 5) {
       for (let i = 0; i <= 5; i++) {
-        let repo = data[i];
+        let repo = data[Math.floor(Math.random() * data.length)];
 
         let anchorTag = document.createElement('a');
         anchorTag.setAttribute('href', `https://github.com/${repo.full_name}`);
@@ -49,11 +49,6 @@ const fetchUserHandle = async (user) => {
 
   loadingMessage.style.display = 'block';
 
-  let divEl = document.createElement('div');
-  let repoEl = await fetchUserRepos(user);
-  console.log(repoEl);
-  console.log(divEl);
-
   try {
     let res = await fetch(url);
     let data = await res.json();
@@ -76,11 +71,12 @@ const fetchUserHandle = async (user) => {
       return;
     }
 
-    setTimeout(() => {
-      divEl.innerHTML = repoEl;
-      console.log(divEl);
-      // actual HTML elemnt of user,
-      userDetailsEl.innerHTML = `
+    let divEl = document.createElement('div');
+    let repoEl = await fetchUserRepos(data.login);
+    divEl.append(repoEl);
+
+    // actual HTML elemnt of user,
+    userDetailsEl.innerHTML = `
         <!-- user details -->
         <div class="flex gap-5 items-center justify-between">
           <div class="flex gap-5 items-center justify-start">
@@ -110,7 +106,7 @@ const fetchUserHandle = async (user) => {
 
         <!-- user bio -->
         ${data.bio || data.blog ? (
-          `
+        `
         <div class="bg-zinc-800 rounded-xl p-3">
           <div class="flex items-center gap-3">
             <p class="text-sm font-semibold italic">Bio: </p>
@@ -124,19 +120,18 @@ const fetchUserHandle = async (user) => {
           </div>
         </div>
         `
-        ) : ""
-        }
+      ) : ""
+      }
 
         <!-- user repos -->
         <div class='space-y-5'>
           <h2 class="italic font-semibold">User's Repos:</h2>
-          ${divEl === '' ? "No repos found!" : divEl}
+          ${divEl.outerHTML}
         </div> 
         `;
 
-      gitUserEl.append(userDetailsEl);
+    gitUserEl.append(userDetailsEl);
 
-    }, 2000);
   } catch (error) {
     console.log("Error in fetching user", error);
   } finally {
