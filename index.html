@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/cdn-favicon-512.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- tailwind css -->
+  <link rel="stylesheet" href="/src/style.css">
+
+  <title>Fetching Git profile from API | Task 18</title>
+</head>
+
+<body>
+
+  <main class="container w-full mx-auto">
+    <section class="flex flex-col justify-center items-center gap-5">
+
+      <h1 class="text-3xl font-bold italic">Github profile search</h1>
+
+      <div class="input-form">
+        <input type="text" class="input-value" placeholder="Search github username..." />
+        <button class="submit-btn">Search</button>
+      </div>
+
+      <div class="w-full" id="github-user"></div>
+    </section>
+  </main>
+
+  <!-- main javascript -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
